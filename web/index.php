@@ -1,5 +1,6 @@
 <?php
 session_start();
+$hash = session_id();
 $mysqli = connect_db();
 $code_flag = "index.php";
 $need_reload = true;
@@ -51,7 +52,7 @@ switch ($code_flag) {
                         $global_id = $row["user_id"];
                     }
                 }
-                $hash = md5(generateCode(10));
+                //$hash = md5(generateCode(10));
                 $query = "UPDATE users SET user_hash='{$hash}' WHERE user_name='{$username}'";
                 mysqli_query($mysqli, $query);
                 setcookie("hash", $hash, time() + 60 * 60 * 24 * 30);
@@ -126,7 +127,7 @@ switch ($code_flag) {
         $result = $mysqli->query("SELECT * FROM users INNER JOIN coordinates ON users.user_id=coordinates.user_id ");
         while ($row = $result->fetch_assoc()) {
             if ($row[user_id] == $_POST['conf_ip']) {
-                if ($_POST['moving']==false)
+                if ($_POST['moving']=='false')
                 {
                     $db_array[] = array(X => $row["coord_x"], Y => $row["coord_y"], Name => "Mine");
                 }

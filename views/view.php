@@ -88,14 +88,6 @@
 </center>
 
 </div>
-<footer>
-
-<div id="footer">
-   <!-- <img src="icons/footer.jpg" height="20%" width="100%">-->
-
-    <div id="footer_text">©by Teodorih, 2014г</div>
-</div>
-</footer>
 
 </body>
 </html>
