@@ -1,7 +1,7 @@
 <?php
 session_start();
 $hash = session_id();
-$mysqli = connect_db();
+include_once("../conf.php");
 $code_flag = "index.php";
 $need_reload = true;
 if (isset($_POST['X'])) {
@@ -39,7 +39,6 @@ switch ($code_flag) {
                 $is_auth = true;
 
                 $username = $_POST['login'];
-
                 $result = $mysqli->query("SELECT * FROM users WHERE user_name='{$username}'");
 
                 if ($result->num_rows == 0) {
@@ -82,15 +81,6 @@ switch ($code_flag) {
 
         $result = $mysqli->query("SELECT user_id FROM users");
         $i = ($result->num_rows);
-        //Записываем все id в массив, кроме нашего.
-      /*  while ($row = $result->fetch_assoc()) {
-            if ($row["user_id"] == $global_id) {
-            } else {
-                $array_ses[($result->num_rows) - $i] = $row["user_id"];
-                $i--;
-            }
-        }*/
-
 
         $result = $mysqli->query("SELECT DISTINCT users.user_id, coord_x,coord_y FROM users INNER JOIN coordinates ON users.user_id = coordinates.user_id WHERE users.user_id !='{$global_id}'");
 
@@ -101,7 +91,6 @@ switch ($code_flag) {
                 $i++;
             }
         }
-        //необходимо проверить, нужен ли массив array_ses!!!
         include_once("../views/view.php");
         break;
     case "ajax.php":
@@ -135,27 +124,5 @@ switch ($code_flag) {
         break;
 
 }
-
-function connect_db()
-{
-    $mysqli = new mysqli("127.0.0.1", "root","04610461");
-    mysqli_select_db($mysqli, "square_coordinates");
-    if ($mysqli->connect_errno) {
-        echo "Не удалось подключиться к MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-    }
-    return $mysqli;
-}
-/*
-function generateCode($length = 6)
-{
-    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHI JKLMNOPRQSTUVWXYZ0123456789";
-    $code = "";
-    $clen = strlen($chars) - 1;
-    while (strlen($code) < $length) {
-        $code .= $chars[mt_rand(0, $clen)];
-    }
-    return $code;
-}*/
-
 ?>
 
