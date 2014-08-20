@@ -19,9 +19,8 @@ switch ($code_flag) {
             $global_id = 1;
         }
         else {
-            while ($row = $result->fetch_assoc()) {
-                $global_id = $row["user_id"] + 1;
-            }
+            $row = $result->fetch_assoc();
+            $global_id = $row["user_id"] + 1;
         }
         $error = false;
         $is_auth = false; // по умолчанию не авторизован
@@ -48,11 +47,9 @@ switch ($code_flag) {
                     mysqli_query($mysqli, $query);
                 } else {
                     $result = $mysqli->query("SELECT user_id FROM users WHERE user_name='{$username}'  ORDER BY user_id  DESC  LIMIT 1 ");
-                    while ($row = $result->fetch_assoc()) {
-                        $global_id = $row["user_id"];
-                    }
+                    $row = $result->fetch_assoc();
+                    $global_id = $row["user_id"];
                 }
-                //$hash = md5(generateCode(10));
                 $query = "UPDATE users SET user_hash='{$hash}' WHERE user_name='{$username}'";
                 mysqli_query($mysqli, $query);
                 setcookie("hash", $hash, time() + 60 * 60 * 24 * 30);
@@ -79,23 +76,20 @@ switch ($code_flag) {
 
         $result = $mysqli->query("SELECT * FROM coordinates WHERE user_id='{$global_id}'  ORDER BY id  DESC  LIMIT 1 ");
         $result->num_rows;
-        while ($row = $result->fetch_assoc()) {
-            $globeX = $row["coord_x"];
-            $globeY = $row["coord_y"];
-
-        }
-
+        $row = $result->fetch_assoc();
+        $globeX = $row["coord_x"];
+        $globeY = $row["coord_y"];
 
         $result = $mysqli->query("SELECT user_id FROM users");
         $i = ($result->num_rows);
         //Записываем все id в массив, кроме нашего.
-        while ($row = $result->fetch_assoc()) {
+      /*  while ($row = $result->fetch_assoc()) {
             if ($row["user_id"] == $global_id) {
             } else {
                 $array_ses[($result->num_rows) - $i] = $row["user_id"];
                 $i--;
             }
-        }
+        }*/
 
 
         $result = $mysqli->query("SELECT DISTINCT users.user_id, coord_x,coord_y FROM users INNER JOIN coordinates ON users.user_id = coordinates.user_id WHERE users.user_id !='{$global_id}'");
@@ -151,7 +145,7 @@ function connect_db()
     }
     return $mysqli;
 }
-
+/*
 function generateCode($length = 6)
 {
     $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHI JKLMNOPRQSTUVWXYZ0123456789";
@@ -161,7 +155,7 @@ function generateCode($length = 6)
         $code .= $chars[mt_rand(0, $clen)];
     }
     return $code;
-}
+}*/
 
 ?>
 
