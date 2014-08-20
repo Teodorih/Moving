@@ -2,6 +2,7 @@
 session_start();
 $hash = session_id();
 include_once("../conf.php");
+//$mysqli = connect_db();
 $code_flag = "index.php";
 $need_reload = true;
 if (isset($_POST['X'])) {
@@ -110,7 +111,7 @@ switch ($code_flag) {
         $result = $mysqli->query("SELECT * FROM users INNER JOIN coordinates ON users.user_id=coordinates.user_id ");
         while ($row = $result->fetch_assoc()) {
             if ($row[user_id] == $_POST['conf_ip']) {
-                if ($_POST['moving']=='false')
+                if ($_POST['moving']=='false' || $_POST['moving']==null)
                 {
                     $db_array[] = array(X => $row["coord_x"], Y => $row["coord_y"], Name => "Mine");
                 }
@@ -124,5 +125,17 @@ switch ($code_flag) {
         break;
 
 }
+
+/*
+function connect_db()
+{
+    $mysqli = new mysqli("127.0.0.1", "root","04610461");
+    mysqli_select_db($mysqli, "square_coordinates");
+    if ($mysqli->connect_errno) {
+        echo "Не удалось подключиться к MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+    }
+    return $mysqli;
+}
+/**/
 ?>
 
