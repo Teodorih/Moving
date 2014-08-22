@@ -29,7 +29,7 @@ switch ($code_flag) {
         if (isset($_POST['logoutbutton'])) {
             setcookie("hash", "", 1);
             session_destroy();
-            header("Location: /index.php");
+            header("Location: ");
 
 
         }
