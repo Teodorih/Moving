@@ -54,8 +54,7 @@
 
             ?>
             <div id="<?php echo "square" . $i ?>"
-                 style="position:inherit;top: <?php echo $coord_array[$i][x] ?>  ; left: <?php echo $coord_array[$i][y] ?>; background-color:black; width:50px; height:50px;"
-            ">
+                 style="position:inherit;top: <?php echo $coord_array[$i][x] ?>  ; left: <?php echo $coord_array[$i][y] ?>; background-color:black; width:50px; height:50px;">
         </div>
 
     <?php
@@ -86,7 +85,6 @@
 ?>
 
 </center>
-
 </div>
 
 </body>

@@ -1,7 +1,7 @@
 <?php
 session_start();
 $hash = session_id();
-include_once("../conf.php");
+include_once("../server_conf/conf.php");
 //$mysqli = connect_db();
 $code_flag = "index.php";
 $need_reload = true;
@@ -29,7 +29,7 @@ switch ($code_flag) {
         if (isset($_POST['logoutbutton'])) {
             setcookie("hash", "", 1);
             session_destroy();
-            header("Location: ");
+            header("Location:/ ");
 
 
         }

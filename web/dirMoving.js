@@ -66,9 +66,17 @@ function getCoords() {
                         document.getElementById("draggble").style.top = array[i].X;
                         document.getElementById("draggble").style.left = array[i].Y;
                     }else{
-                    document.getElementById("square" + y).style.top = array[i].X;
-                    document.getElementById("square" + y).style.left = array[i].Y;
-                    y++;
+                        if(document.getElementById("square" + y) == null)
+                        {
+                            $('#sq').append('<div id="square' + y +'"></div>');
+                            document.getElementById("square" + y).style.position ="inherit";
+                            document.getElementById("square" + y).style.backgroundColor ="black";
+                            document.getElementById("square" + y).style.width = 50;
+                            document.getElementById("square" + y).style.height = 50;
+                        }
+                        document.getElementById("square" + y).style.top = array[i].X;
+                        document.getElementById("square" + y).style.left = array[i].Y;
+                        y++;
                     }
                 }
 
