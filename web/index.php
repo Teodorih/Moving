@@ -1,7 +1,8 @@
 <?php
 session_start();
 $hash = session_id();
-include_once("../server_conf/conf.php");
+include_once("ajax.php");
+include_once("../server_conf/conf.php"); // кофигурация БД
 //$mysqli = connect_db();
 $code_flag = "index.php";
 $need_reload = true;
@@ -14,15 +15,8 @@ if (isset($_POST['conf'])) {
 switch ($code_flag) {
     case "index.php":
         //проверка индексации
-        $result = $mysqli->query("SELECT user_id FROM users  ORDER BY user_id  DESC  LIMIT 1 ");
-        if ($result->num_rows == 0)
-        {
-            $global_id = 1;
-        }
-        else {
-            $row = $result->fetch_assoc();
-            $global_id = $row["user_id"] + 1;
-        }
+
+        $global_id = TableValues::GetLastIdFromTable($mysqli);
         $error = false;
         $is_auth = false; // по умолчанию не авторизован
         $workspaceH = 500;
@@ -40,19 +34,15 @@ switch ($code_flag) {
                 $is_auth = true;
 
                 $username = $_POST['login'];
-                $result = $mysqli->query("SELECT * FROM users WHERE user_name='{$username}'");
-
-                if ($result->num_rows == 0) {
-                    $query = "INSERT INTO `users`(user_id,user_name) VALUES ('{$global_id}','{$username}')";
-                    mysqli_query($mysqli, $query);
+                $CurrentUser = new IdAndName($global_id,$username);
+                $NameExist = $CurrentUser->NameExist($mysqli);
+                if($NameExist==true)
+                {
+                    $global_id = $CurrentUser->GetRealUserId($mysqli);
                 } else {
-                    $result = $mysqli->query("SELECT user_id FROM users WHERE user_name='{$username}'  ORDER BY user_id  DESC  LIMIT 1 ");
-                    $row = $result->fetch_assoc();
-                    $global_id = $row["user_id"];
+                    $CurrentUser->AddNewUserToBD($mysqli);
                 }
-                $query = "UPDATE users SET user_hash='{$hash}' WHERE user_name='{$username}'";
-                mysqli_query($mysqli, $query);
-                setcookie("hash", $hash, time() + 60 * 60 * 24 * 30);
+                $CurrentUser ->UpdateUserHash($mysqli,$hash);
             }
         } else {
             if ((empty($_COOKIE['hash']))) {
@@ -75,7 +65,7 @@ switch ($code_flag) {
         <?php
 
         $result = $mysqli->query("SELECT * FROM coordinates WHERE user_id='{$global_id}'  ORDER BY id  DESC  LIMIT 1 ");
-        $result->num_rows;
+        //$result->num_rows;
         $row = $result->fetch_assoc();
         $globeX = $row["coord_x"];
         $globeY = $row["coord_y"];
@@ -95,47 +85,14 @@ switch ($code_flag) {
         include_once("../views/view.php");
         break;
     case "ajax.php":
-        $id = $_POST['ip'];
-        $x = $_POST['X'];
-        $y = $_POST['Y'];
-        $username = $_POST['name'];
-
-        $query = "UPDATE users SET user_name='$username' WHERE user_id='$id'";
-        mysqli_query($mysqli, $query);
-        $query = "DELETE FROM `coordinates` WHERE user_id='{$id}'";
-        mysqli_query($mysqli, $query);
-        $query = "INSERT INTO `coordinates`(user_id,coord_x,coord_y) VALUES ('{$id}','{$x}','$y')";
-        mysqli_query($mysqli, $query);
+        $NewOwnCoordinates =new TableValues($_POST['ip'],$_POST['X'],$_POST['Y'],$_POST['name']);
+        $NewOwnCoordinates->AddNewCoordinates($mysqli);
         break;
     case "response.php":
-        $result = $mysqli->query("SELECT * FROM users INNER JOIN coordinates ON users.user_id=coordinates.user_id ");
-        while ($row = $result->fetch_assoc()) {
-            if ($row[user_id] == $_POST['conf_ip']) {
-                if ($_POST['moving']=='false' || $_POST['moving']==null)
-                {
-                    $db_array[] = array(X => $row["coord_x"], Y => $row["coord_y"], Name => "Mine");
-                }
-            } else {
-                $db_array[] = array(X => $row["coord_x"], Y => $row["coord_y"], Name => $row['user_name']);
-            }
-        }
-
-        echo json_encode($db_array);
-
+        TableValues::ReadTableValuesAndSendIt($mysqli);
         break;
 
 }
 
-/*
-function connect_db()
-{
-    $mysqli = new mysqli("127.0.0.1", "root","04610461");
-    mysqli_select_db($mysqli, "square_coordinates");
-    if ($mysqli->connect_errno) {
-        echo "Не удалось подключиться к MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-    }
-    return $mysqli;
-}
-/**/
 ?>
 

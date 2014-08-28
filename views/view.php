@@ -22,6 +22,8 @@
 <div id="header">
      <img src="icons/logo.png" alt="ошибка" width=80px height=80px>
     You can try to move it
+    <img id="db_icon" src="icons/database256.gif" alt="ошибка"  width=80px height=80px>
+    <a href="#" id="dbButton">Открыть БД</a>
 </div>
 </header>
 <div id="content">
